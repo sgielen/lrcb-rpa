@@ -17,7 +17,9 @@ AssessmentWindow::AssessmentWindow(QWidget *parent)
 : QMainWindow(parent)
 {
 	setWindowTitle("LRCB-RPA - Assessment");
-	resize(500, 350);
+
+	// set fullscreen
+	setWindowState(windowState() | Qt::WindowFullScreen);
 
 	auto *fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(QIcon(":/info.png"), tr("&About"), this, &AssessmentWindow::about);
@@ -26,9 +28,10 @@ AssessmentWindow::AssessmentWindow(QWidget *parent)
 
 	setCentralWidget(new QWidget);
 	centralWidget()->setLayout(new QVBoxLayout);
-	addTitleToWidget(centralWidget(), "Assessment configuration");
+	title = addTitleToWidget(centralWidget(), "Assessment configuration");
 
-	centralWidget()->layout()->addWidget(new QLabel("Webcam calibration", this));
+	commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
+	centralWidget()->layout()->addWidget(commandLine);
 
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
@@ -56,10 +59,11 @@ AssessmentWindow::AssessmentWindow(QWidget *parent)
 
 	dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
 
-	QPushButton *start = new QPushButton("Start assessment", this);
-	centralWidget()->layout()->addWidget(start);
+	assessmentBtn = new QPushButton("Start assessment", this);
+	centralWidget()->layout()->addWidget(assessmentBtn);
 
-	connect(start, &QPushButton::pressed, this, &AssessmentWindow::startAssessment);
+	connect(assessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::startAssessment);
+	assessmentBtn->setEnabled(false);
 
 	switchCamera();
 }
@@ -80,6 +84,32 @@ void AssessmentWindow::loginPerformed(QString name)
 
 void AssessmentWindow::startAssessment()
 {
+	// TODO: stop taking webcam pictures automatically
+	webcamImage->hide();
+	webcamImage->clear();
+
+	title->setText("Assessment");
+	commandLine->setText("Drag your finger over the bar to enter a confidence level:");
+
+	assessmentBtn->disconnect();
+	assessmentBtn->setText("Save and quit");
+	connect(assessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::close);
+
+	// TODO: display score bar and make it 'draggable'
+	// TODO: once a score is entered:
+	// - disable the assessmentBtn,
+	// - make webcamImage visible again,
+	// - take a single capture,
+	// - add a Retake button that takes another capture,
+	// - add an Accept button that publishes a capture line,
+	// - make the Accept button count down automatically.
+	// TODO: once a score is accepted:
+	// - load the sheet
+	// - add a row to it
+	// - save the sheet to temporary file
+	// - move temporary file over normal file
+	// - hide the webcamImage & buttons again
+	// - re-enable the assessmentBtn
 }
 
 void AssessmentWindow::switchCamera()
@@ -131,6 +161,7 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 		pixmap = pixmap.scaledToWidth(webcamImage->width());
 		webcamImage->setPixmap(pixmap);
 		file.remove();
+		assessmentBtn->setEnabled(true);
 	}
 
 	camera->unlock();

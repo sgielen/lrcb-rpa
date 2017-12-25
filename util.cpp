@@ -6,7 +6,7 @@
 #include <QFrame>
 #include <QSettings>
 
-void addTitleToWidget(QWidget *widget, QString title) {
+QLabel *addTitleToWidget(QWidget *widget, QString title) {
 	auto *label = new QLabel(title, widget);
 	auto font = label->font();
 	font.setPointSize(16);
@@ -18,6 +18,8 @@ void addTitleToWidget(QWidget *widget, QString title) {
 	line->setFrameShape(QFrame::HLine);
 	line->setFrameShadow(QFrame::Sunken);
 	widget->layout()->addWidget(line);
+
+	return label;
 }
 
 static const char orgName[] = "LRCB";

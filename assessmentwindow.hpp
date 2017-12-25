@@ -8,6 +8,7 @@ class QCamera;
 class QCameraImageCapture;
 class QComboBox;
 class QLabel;
+class QPushButton;
 
 struct AssessmentWindow : public QMainWindow
 {
@@ -29,6 +30,10 @@ private slots:
 
 private:
 	QString userName;
+
+	QLabel *title = nullptr;
+	QLabel *commandLine = nullptr;
+	QPushButton *assessmentBtn = nullptr;
 
 	QComboBox *cameraBox = nullptr;
 	QList<QCameraInfo> cameraInfo;

@@ -3,9 +3,10 @@
 #include <QString>
 #include <QDir>
 
+class QLabel;
 class QWidget;
 
-void addTitleToWidget(QWidget *widget, QString title);
+QLabel *addTitleToWidget(QWidget *widget, QString title);
 
 struct Settings {
 	QDir storageLocation;
