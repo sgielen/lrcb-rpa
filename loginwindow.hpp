@@ -23,5 +23,4 @@ private slots:
 
 private:
 	QListWidget *users = nullptr;
-	QPushButton *login = nullptr;
 };

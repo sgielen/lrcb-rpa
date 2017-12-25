@@ -35,7 +35,7 @@ LoginWindow::LoginWindow(QWidget *parent)
 		users->addItem(user);
 	}
 
-	login = new QPushButton("Log in", this);
+	QPushButton *login = new QPushButton("Log in", this);
 	centralWidget()->layout()->addWidget(login);
 
 	connect(login, &QPushButton::pressed, this, &LoginWindow::performLogin);
@@ -65,6 +65,10 @@ void LoginWindow::settings()
 
 void LoginWindow::performLogin()
 {
+	if(users->selectedItems().count() == 0) {
+		return;
+	}
+
 	QString user = users->item(users->currentRow())->text();
 	emit loginPerformed(user);
 }
