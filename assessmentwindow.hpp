@@ -15,7 +15,7 @@ struct AssessmentWindow : public QMainWindow
 Q_OBJECT
 
 public:
-	AssessmentWindow(QWidget *parent = 0);
+	AssessmentWindow(bool skipSetup, QWidget *parent = 0);
 	~AssessmentWindow();
 
 public slots:
@@ -29,6 +29,8 @@ private slots:
 	void imageSaved(int id, const QString &fileName);
 
 private:
+	bool skipSetup;
+
 	QString userName;
 
 	QLabel *title = nullptr;

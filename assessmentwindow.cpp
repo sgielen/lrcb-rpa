@@ -13,8 +13,9 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-AssessmentWindow::AssessmentWindow(QWidget *parent)
+AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
 : QMainWindow(parent)
+, skipSetup(s)
 {
 	setWindowTitle("LRCB-RPA - Assessment");
 
@@ -66,6 +67,10 @@ AssessmentWindow::AssessmentWindow(QWidget *parent)
 	assessmentBtn->setEnabled(false);
 
 	switchCamera();
+
+	if(skipSetup) {
+		startAssessment();
+	}
 }
 
 AssessmentWindow::~AssessmentWindow()
