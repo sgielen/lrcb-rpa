@@ -10,6 +10,8 @@ class QComboBox;
 class QLabel;
 class QPushButton;
 
+class AssessmentScore;
+
 struct AssessmentWindow : public QMainWindow
 {
 Q_OBJECT
@@ -27,6 +29,7 @@ private slots:
 	void switchCamera();
 	void takeCapture(bool);
 	void imageSaved(int id, const QString &fileName);
+	void scoreEntered();
 
 private:
 	bool skipSetup;
@@ -45,4 +48,6 @@ private:
 	QCameraImageCapture *imageCapture = nullptr;
 
 	QLabel *webcamImage = nullptr;
+
+	AssessmentScore *score_input = nullptr;
 };

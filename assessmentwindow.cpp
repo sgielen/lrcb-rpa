@@ -1,4 +1,5 @@
 #include "assessmentwindow.hpp"
+#include "assessmentscore.hpp"
 #include "util.hpp"
 
 #include <QCamera>
@@ -12,6 +13,8 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
+
+#include <cassert>
 
 AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
 : QMainWindow(parent)
@@ -33,6 +36,10 @@ AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
 
 	commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
 	centralWidget()->layout()->addWidget(commandLine);
+
+	score_input = new AssessmentScore(AssessmentScoreLayout::GreenRed, this);
+	centralWidget()->layout()->addWidget(score_input);
+	score_input->hide();
 
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
@@ -100,19 +107,29 @@ void AssessmentWindow::startAssessment()
 	assessmentBtn->setText("Save and quit");
 	connect(assessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::close);
 
-	// TODO: display score bar and make it 'draggable'
-	// TODO: once a score is entered:
-	// - disable the assessmentBtn,
-	// - make webcamImage visible again,
-	// - take a single capture,
-	// - add a Retake button that takes another capture,
-	// - add an Accept button that publishes a capture line,
-	// - make the Accept button count down automatically.
+	score_input->show();
+	connect(score_input, &AssessmentScore::scoreEntered, this, &AssessmentWindow::scoreEntered);
+}
+
+void AssessmentWindow::scoreEntered()
+{
+	assessmentBtn->setEnabled(false);
+	webcamImage->show();
+
+	assert(camera);
+	assert(imageCapture);
+
+	// TODO: make behaviour of imageSaved() different if we take a capture
+	// because the score is entered?
+	camera->start();
+
+	// TODO: add Retake button, add Accept button, make the Accept button count down automatically
+
 	// TODO: once a score is accepted:
 	// - load the sheet
 	// - add a row to it
 	// - save the sheet to temporary file
-	// - move temporary file over normal file
+	// - if temporary file is not empty, move temporary file over normal file
 	// - hide the webcamImage & buttons again
 	// - re-enable the assessmentBtn
 }
