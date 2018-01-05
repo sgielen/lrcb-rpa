@@ -38,7 +38,12 @@ AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
 	centralWidget()->layout()->addWidget(commandLine);
 
 	score_input = new AssessmentScore(AssessmentScoreLayout::GreenRed, this);
-	centralWidget()->layout()->addWidget(score_input);
+	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	auto *score_layout = new QHBoxLayout;
+	score_layout->addStretch();
+	score_layout->addWidget(score_input);
+	score_layout->addStretch();
+	centralWidget()->layout()->addItem(score_layout);
 	score_input->hide();
 
 	cameraInfo = QCameraInfo::availableCameras();

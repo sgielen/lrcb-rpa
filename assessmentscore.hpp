@@ -38,6 +38,6 @@ private:
 
 	bool inDrag = false;
 	QPoint dragStartedPos;
-
+	QRect bar;
 	QString text;
 };
