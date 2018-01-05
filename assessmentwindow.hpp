@@ -4,20 +4,20 @@
 #include <QList>
 #include <QCameraInfo>
 
+#include "assessmentscore.hpp"
+
 class QCamera;
 class QCameraImageCapture;
 class QComboBox;
 class QLabel;
 class QPushButton;
 
-class AssessmentScore;
-
 struct AssessmentWindow : public QMainWindow
 {
 Q_OBJECT
 
 public:
-	AssessmentWindow(bool skipSetup, QWidget *parent = 0);
+	AssessmentWindow(bool skipSetup, AssessmentScoreLayout score_layout, QWidget *parent = 0);
 	~AssessmentWindow();
 
 public slots:

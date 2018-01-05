@@ -2,6 +2,7 @@
 #include "assessmentwindow.hpp"
 #include <QApplication>
 #include <QCommandLineParser>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -17,9 +18,26 @@ int main(int argc, char *argv[])
 	QCommandLineOption skipDialogsOption("s", "Skip dialogs and start assessment immediately");
 	parser.addOption(skipDialogsOption);
 
+	QCommandLineOption layoutStyle("l", "Use this score bar layout", "layout", "greenred");
+	parser.addOption(layoutStyle);
+
 	parser.process(app);
 
 	bool skipDialogs = parser.isSet(skipDialogsOption);
+
+	QString layoutstr = parser.value(layoutStyle);
+	AssessmentScoreLayout layout = AssessmentScoreLayout::GreenRed;
+
+	if(layoutstr.toLower() == "greenred") {
+		layout = AssessmentScoreLayout::GreenRed;
+	} else if(layoutstr.toLower() == "black") {
+		layout = AssessmentScoreLayout::Black;
+	} else if(layoutstr.toLower() == "greenwhitered") {
+		layout = AssessmentScoreLayout::GreenWhiteRed;
+	} else {
+		std::cerr << "Didn't understand option for -l. Supported: greenred, black, greenwhitered.\n";
+		exit(1);
+	}
 
 	LoginWindow *login = nullptr;
 	AssessmentWindow *main = nullptr;
@@ -30,13 +48,13 @@ int main(int argc, char *argv[])
 		QObject::connect(login, &LoginWindow::loginPerformed,
 		[&](QString loginName) {
 			login->deleteLater();
-			main = new AssessmentWindow(false);
+			main = new AssessmentWindow(false, layout);
 			main->loginPerformed(loginName);
 		});
 
 		login->show();
 	} else {
-		main = new AssessmentWindow(true);
+		main = new AssessmentWindow(true, layout);
 		main->loginPerformed("");
 	}
 

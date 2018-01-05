@@ -16,7 +16,7 @@
 
 #include <cassert>
 
-AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
+AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, QWidget *parent)
 : QMainWindow(parent)
 , skipSetup(s)
 {
@@ -37,7 +37,7 @@ AssessmentWindow::AssessmentWindow(bool s, QWidget *parent)
 	commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
 	centralWidget()->layout()->addWidget(commandLine);
 
-	score_input = new AssessmentScore(AssessmentScoreLayout::GreenRed, this);
+	score_input = new AssessmentScore(input_layout, this);
 	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	auto *score_layout = new QHBoxLayout;
 	score_layout->addStretch();
