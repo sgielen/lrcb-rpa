@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 		QObject::connect(login, &LoginWindow::loginPerformed,
 		[&](QString loginName) {
 			login->deleteLater();
+			login = nullptr;
 			main = new AssessmentWindow(false, layout);
 			main->loginPerformed(loginName);
 		});
@@ -58,5 +59,8 @@ int main(int argc, char *argv[])
 		main->loginPerformed("");
 	}
 
-	return app.exec();
+	auto res = app.exec();
+	delete login;
+	delete main;
+	return res;
 }
