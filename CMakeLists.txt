@@ -17,6 +17,7 @@ add_executable(lrcb-rpa WIN32
 	settingswindow.cpp settingswindow.hpp
 	assessmentwindow.cpp assessmentwindow.hpp
 	assessmentscore.cpp assessmentscore.hpp
+	excel.cpp excel.hpp
 	${RESOURCES}
 )
 target_link_libraries(lrcb-rpa Qt5::Widgets Qt5::Multimedia)

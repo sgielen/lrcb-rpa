@@ -1,11 +1,13 @@
 #include "assessmentwindow.hpp"
 #include "assessmentscore.hpp"
+#include "excel.hpp"
 #include "util.hpp"
 
 #include <QCamera>
 #include <QCameraImageCapture>
 #include <QCameraInfo>
 #include <QComboBox>
+#include <QDateTime>
 #include <QDebug>
 #include <QLabel>
 #include <QMenuBar>
@@ -65,18 +67,62 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 		cameraBox->hide();
 	}
 
-	webcamImage = new QLabel(this);
-	centralWidget()->layout()->addWidget(webcamImage);
-
 	connect(cameraBox, &QComboBox::currentTextChanged, this, &AssessmentWindow::switchCamera);
+
+	webcamImageText = new QLabel("Webcam shot");
+	centralWidget()->layout()->addWidget(webcamImageText);
+	webcamImageText->hide();
+
+	webcamImage = new QLabel(this);
+	webcamImage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+
+	QFrame *webcamButtonsFrame = new QFrame(this);
+	webcamButtonsFrame->setLayout(new QVBoxLayout);
+
+	webcamAcceptButton = new QPushButton(QIcon(":/tick.png"), "Accept", this);
+	webcamButtonsFrame->layout()->addWidget(webcamAcceptButton);
+	QPushButton *webcamRetakeButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
+	webcamButtonsFrame->layout()->addWidget(webcamRetakeButton);
+	autoAccept = new QTimer(this);
+	autoAccept->setInterval(1000);
+	autoAccept->setSingleShot(false);
+	connect(autoAccept, &QTimer::timeout, this, &AssessmentWindow::countDown);
+
+	connect(webcamRetakeButton, &QPushButton::pressed, this, [this]() {
+		autoAccept->stop();
+		webcamAcceptButton->setText("Accept");
+	});
+
+	// But for now, temporarily re-purpose the accept button to start the assessment session
+	webcamAcceptButton->setText("Start assessment");
+	webcamAcceptButton->setEnabled(false);
+	webcamRetakeButton->hide();
+	connect(webcamAcceptButton, &QPushButton::pressed, this, [this, webcamRetakeButton]() {
+		webcamAcceptButton->setText("Accept");
+		webcamRetakeButton->show();
+		startAssessment();
+	});
+
+	webcamFrame = new QFrame(this);
+	webcamFrame->setLayout(new QHBoxLayout);
+	webcamFrame->layout()->addWidget(webcamImage);
+	webcamFrame->layout()->addWidget(webcamButtonsFrame);
+	centralWidget()->layout()->addWidget(webcamFrame);
 
 	dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
 
-	assessmentBtn = new QPushButton("Start assessment", this);
-	centralWidget()->layout()->addWidget(assessmentBtn);
+	savedLabel = new QLabel(this);
+	savedLabel->setTextFormat(Qt::RichText);
+	savedLabel->setText("<img src=\":/diskette.png\"/> Assessment saved!");
+	savedLabel->setStyleSheet("QLabel { background-color: #dff0d8; border: 1px solid #a2d48f; }");
+	savedLabel->setAlignment(Qt::AlignHCenter);
+	savedLabel->hide();
+	centralWidget()->layout()->addWidget(savedLabel);
 
-	connect(assessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::startAssessment);
-	assessmentBtn->setEnabled(false);
+	finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
+	centralWidget()->layout()->addWidget(finishAssessmentBtn);
+
+	connect(finishAssessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::finishAssessment);
 
 	switchCamera();
 
@@ -87,6 +133,10 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 AssessmentWindow::~AssessmentWindow()
 {
+	QFile lastCaptureFile(lastCaptureFilename);
+	if(!lastCaptureFilename.isEmpty() && lastCaptureFile.exists()) {
+		lastCaptureFile.remove();
+	}
 }
 
 void AssessmentWindow::about()
@@ -102,41 +152,50 @@ void AssessmentWindow::loginPerformed(QString name)
 void AssessmentWindow::startAssessment()
 {
 	// TODO: stop taking webcam pictures automatically
-	webcamImage->hide();
+	webcamImageText->hide();
+	webcamFrame->hide();
 	webcamImage->clear();
 
 	title->setText("Assessment");
 	commandLine->setText("Drag your finger over the bar to enter a confidence level:");
 
-	assessmentBtn->disconnect();
-	assessmentBtn->setText("Save and quit");
-	connect(assessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::close);
-
+	score_input->unsetScore();
 	score_input->show();
 	connect(score_input, &AssessmentScore::scoreEntered, this, &AssessmentWindow::scoreEntered);
+
+	finishAssessmentBtn->setText("Finish assessment session and exit");
+	finishAssessmentBtn->setEnabled(true);
+	webcamAcceptButton->disconnect(this);
+	connect(webcamAcceptButton, &QPushButton::pressed, this, &AssessmentWindow::saveAssessment);
 }
 
 void AssessmentWindow::scoreEntered()
 {
-	assessmentBtn->setEnabled(false);
-	webcamImage->show();
+	finishAssessmentBtn->setEnabled(false);
+	webcamImageText->show();
+	webcamFrame->show();
 
 	assert(camera);
 	assert(imageCapture);
 
+	autoAcceptSecondsRemaining = autoAcceptSeconds + 1;
+	autoAccept->start();
+	countDown();
+
 	// TODO: make behaviour of imageSaved() different if we take a capture
 	// because the score is entered?
 	camera->start();
+}
 
-	// TODO: add Retake button, add Accept button, make the Accept button count down automatically
-
-	// TODO: once a score is accepted:
-	// - load the sheet
-	// - add a row to it
-	// - save the sheet to temporary file
-	// - if temporary file is not empty, move temporary file over normal file
-	// - hide the webcamImage & buttons again
-	// - re-enable the assessmentBtn
+void AssessmentWindow::countDown()
+{
+	autoAcceptSecondsRemaining--;
+	if(autoAcceptSecondsRemaining == 0) {
+		webcamAcceptButton->setText("Accept");
+		webcamAcceptButton->click();
+	} else {
+		webcamAcceptButton->setText("Accept (" + QString::number(autoAcceptSecondsRemaining) + ")");
+	}
 }
 
 void AssessmentWindow::switchCamera()
@@ -185,10 +244,18 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 	QFile file(filename);
 	if(file.exists()) {
 		QPixmap pixmap(filename);
-		pixmap = pixmap.scaledToWidth(webcamImage->width());
+		auto const labelWidth = webcamImage->width() - 2 * webcamImage->frameWidth();
+		pixmap = pixmap.scaledToWidth(labelWidth);
 		webcamImage->setPixmap(pixmap);
-		file.remove();
-		assessmentBtn->setEnabled(true);
+		webcamAcceptButton->setEnabled(true);
+
+		if(!lastCaptureFilename.isEmpty()) {
+			QFile lastCaptureFile(lastCaptureFilename);
+			if(lastCaptureFile.exists()) {
+				lastCaptureFile.remove();
+			}
+		}
+		lastCaptureFilename = filename;
 	}
 
 	camera->unlock();
@@ -196,4 +263,53 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 	QTimer::singleShot(100, [this](){
 		takeCapture(imageCapture->isReadyForCapture());
 	});
+}
+
+void AssessmentWindow::saveAssessment()
+{
+	autoAccept->stop();
+
+	QFile lastCaptureFile(lastCaptureFilename);
+	if(lastCaptureFilename.isEmpty() || !lastCaptureFile.exists()) {
+		QMessageBox::critical(this, "Assessment error", "The assessment could not be saved: the capture file does not exist.");
+		return;
+	} else {
+		Settings s;
+		loadSettings(s);
+
+		QDateTime now = QDateTime::currentDateTime();
+
+		QString extension = lastCaptureFilename.right(4);
+		if(extension.size() != 4 || extension[0] != '.') {
+			extension = ".png"; // take a guess
+		}
+
+		QString fileName = now.toString("yyyy-MM-dd-HH-mm-ss") + extension;
+		QString filePath = s.storageLocation.absoluteFilePath(fileName);
+		s.storageLocation.mkpath(".");
+
+		if(!lastCaptureFile.copy(filePath)) {
+			QMessageBox::critical(this, "Assessment error", "The assessment could not be saved: the capture file could not be copied.");
+			return;
+		}
+
+		QString excelFileName = now.toString("yyyy-MM-dd") + ".xls";
+		QString excelFilePath = s.storageLocation.absoluteFilePath(excelFileName);
+		if(!addRowToExcel(excelFilePath, now, userName, score_input->getScore(), fileName)) {
+			QMessageBox::critical(this, "Assessment error", "The assessment could not be saved: the Excel file could not be updated.");
+			return;
+		}
+	}
+
+	savedLabel->show();
+	QTimer::singleShot(5000, this, [this]() { savedLabel->hide(); });
+	startAssessment();
+}
+
+void AssessmentWindow::finishAssessment() {
+	auto button = QMessageBox::question(this, "Finish assessment?",
+		"Are you sure you want to finish the assessment and exit the application?");
+	if(button == QMessageBox::Yes) {
+		close();
+	}
 }

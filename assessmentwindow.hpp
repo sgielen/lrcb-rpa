@@ -11,6 +11,7 @@ class QCameraImageCapture;
 class QComboBox;
 class QLabel;
 class QPushButton;
+class QFrame;
 
 struct AssessmentWindow : public QMainWindow
 {
@@ -30,6 +31,9 @@ private slots:
 	void takeCapture(bool);
 	void imageSaved(int id, const QString &fileName);
 	void scoreEntered();
+	void saveAssessment();
+	void countDown();
+	void finishAssessment();
 
 private:
 	bool skipSetup;
@@ -38,7 +42,7 @@ private:
 
 	QLabel *title = nullptr;
 	QLabel *commandLine = nullptr;
-	QPushButton *assessmentBtn = nullptr;
+	QPushButton *finishAssessmentBtn = nullptr;
 
 	QComboBox *cameraBox = nullptr;
 	QList<QCameraInfo> cameraInfo;
@@ -47,7 +51,18 @@ private:
 	QCamera *camera = nullptr;
 	QCameraImageCapture *imageCapture = nullptr;
 
+	QFrame *webcamFrame = nullptr;
 	QLabel *webcamImage = nullptr;
+	QLabel *webcamImageText = nullptr;
+	QPushButton *webcamAcceptButton = nullptr;
+	QString lastCaptureFilename;
+
+	const int autoAcceptSeconds = 4;
+	int autoAcceptSecondsRemaining = 0;
+	QTimer *autoAccept = nullptr;
+
+	QLabel *savedLabel = nullptr;
+	QTimer *savedLabelHide = nullptr;
 
 	AssessmentScore *score_input = nullptr;
 };

@@ -36,11 +36,13 @@ void AssessmentScore::setScore(float s)
 {
 	score = s;
 	have_score = true;
+	repaint();
 }
 
 void AssessmentScore::unsetScore()
 {
 	have_score = false;
+	repaint();
 }
 
 void AssessmentScore::paintEvent(QPaintEvent *)
