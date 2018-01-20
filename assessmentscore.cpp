@@ -178,13 +178,14 @@ void AssessmentScore::mouseReleaseEvent(QMouseEvent *event)
 
 		float y_faction = float(delta.y()) / bar.height();
 
-		have_score = isDown && isPosInBar && y_faction >= MIN_Y_FACTION;
-
-		score = float(posInBar.x()) / bar.width();
-
-		if(have_score) {
+		bool score_entered = isDown && isPosInBar && y_faction >= MIN_Y_FACTION;
+		if (score_entered) {
+			have_score = true;
+			score = float(posInBar.x()) / bar.width();
 			emit scoreEntered(score);
 		}
+
+		// otherwise, don't remove the score that may have been entered already
 	}
 	inDrag = false;
 	repaint();
