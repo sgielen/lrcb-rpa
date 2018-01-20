@@ -27,11 +27,6 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	// set fullscreen
 	setWindowState(windowState() | Qt::WindowFullScreen);
 
-	auto *fileMenu = menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(QIcon(":/info.png"), tr("&About"), this, &AssessmentWindow::about);
-	fileMenu->addSeparator();
-	fileMenu->addAction(QIcon(":/exit.xpm"), tr("&Quit"), this, &QWidget::close);
-
 	setCentralWidget(new QWidget);
 	centralWidget()->setLayout(new QVBoxLayout);
 	title = addTitleToWidget(centralWidget(), "Assessment configuration");
@@ -50,9 +45,13 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
-		QLabel *cameras = new QLabel("Error: No webcameras available -- connect a camera and restart the application.", this);
+		QLabel *cameras = new QLabel("Error: No cameras available -- connect a camera and restart the application.", this);
 		centralWidget()->layout()->addWidget(cameras);
 		dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
+		finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
+		centralWidget()->layout()->addWidget(finishAssessmentBtn);
+
+		connect(finishAssessmentBtn, &QPushButton::pressed, this, &QMainWindow::close);
 		return;
 	}
 
@@ -137,10 +136,6 @@ AssessmentWindow::~AssessmentWindow()
 	if(!lastCaptureFilename.isEmpty() && lastCaptureFile.exists()) {
 		lastCaptureFile.remove();
 	}
-}
-
-void AssessmentWindow::about()
-{
 }
 
 void AssessmentWindow::loginPerformed(QString name)

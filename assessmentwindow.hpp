@@ -25,7 +25,6 @@ public slots:
 	void loginPerformed(QString name);
 
 private slots:
-	void about();
 	void startAssessment();
 	void switchCamera();
 	void takeCapture(bool);
