@@ -219,7 +219,6 @@ void AssessmentWindow::switchCamera()
 		imageCapture->setCaptureDestination(QCameraImageCapture::CaptureToFile);
 
 		camera->setCaptureMode(QCamera::CaptureStillImage);
-		camera->start();
 
 		connect(imageCapture, &QCameraImageCapture::readyForCaptureChanged, this, &AssessmentWindow::takeCapture);
 		connect(imageCapture, &QCameraImageCapture::imageSaved, this, &AssessmentWindow::imageSaved);
@@ -228,6 +227,9 @@ void AssessmentWindow::switchCamera()
 		    [=](int, QCameraImageCapture::Error, const QString &errorString){
 			QMessageBox::critical(this, "Camera error", errorString);
 		});
+
+		camera->start();
+		camera->searchAndLock();
 	}
 }
 
