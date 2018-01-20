@@ -2,8 +2,11 @@
 #include "settingswindow.hpp"
 #include "util.hpp"
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QLabel>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QListWidget>
@@ -12,7 +15,8 @@ LoginWindow::LoginWindow(QWidget *parent)
 : QMainWindow(parent)
 {
 	setWindowTitle("LRCB-RPA Login");
-	resize(500, 350);
+	auto screenGeom = QApplication::desktop()->availableGeometry(this);
+	resize(screenGeom.width() * float(0.35), screenGeom.height() * float(0.40));
 
 	auto *fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(QIcon(":/info.png"), tr("&About"), this, &LoginWindow::about);
@@ -43,9 +47,13 @@ LoginWindow::LoginWindow(QWidget *parent)
 
 void LoginWindow::about()
 {
-	// TODO: show about screen
-	// TODO: show "Some icons made by Freepik, licensed by CC BY 3.0"
-	// TODO: show "Some icons made by FatCow, licensed by CC BY 3.0"
+	QMessageBox::information(this, "About LRCB-RPA",
+		"This is the Radiology Performance Assessment tool, written for "
+		"the Dutch expert centre for screening (LRCB) by Sjors Gielen.\n\n"
+		"Version: " __DATE__ " " __TIME__ "\n\n"
+		"Some icons made by Freepik, licensed by CC BY 3.0.\n"
+		"Some icons made by FatCow, licenesd by CC BY 3.0.\n"
+	);
 }
 
 void LoginWindow::settings()

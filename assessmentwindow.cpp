@@ -24,8 +24,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 {
 	setWindowTitle("LRCB-RPA - Assessment");
 
-	// set fullscreen
-	setWindowState(windowState() | Qt::WindowFullScreen);
+	showFullScreen();
 
 	setCentralWidget(new QWidget);
 	centralWidget()->setLayout(new QVBoxLayout);

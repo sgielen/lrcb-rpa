@@ -17,6 +17,23 @@ Section
 	File @QT_LIBRARY_PATH@\Qt5Network.dll
 	File @QT_LIBRARY_PATH@\Qt5Widgets.dll
 	File @QT_LIBRARY_PATH@\Qt5Xml.dll
+	SetOutPath $TEMP\LRCBRPA\platforms
+	File @QT_LIBRARY_PATH@\..\plugins\platforms\qwindows.dll
+	SetOutPath $TEMP\LRCBRPA\styles
+	File @QT_LIBRARY_PATH@\..\plugins\styles\qwindowsvistastyle.dll
+	SetOutPath $TEMP\LRCBRPA\imageformats
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qgif.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qicns.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qico.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qjpeg.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qsvg.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qtga.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qtiff.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qwbmp.dll
+	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qwebp.dll
+	SetOutPath $TEMP\LRCBRPA\mediaservice
+	File @QT_LIBRARY_PATH@\..\plugins\mediaservice\dsengine.dll
+	SetOutPath $TEMP\LRCBRPA
 	ExecWait "$TEMP\LRCBRPA\lrcb-rpa.exe"
 	SetOutPath $TEMP
 	RMDir /r "$TEMP\LRCBRPA"
