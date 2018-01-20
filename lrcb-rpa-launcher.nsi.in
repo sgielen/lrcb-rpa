@@ -1,0 +1,23 @@
+SilentInstall silent
+RequestExecutionLevel user
+ShowInstDetails hide
+SetCompressor /SOLID lzma
+
+Name "LRCB-RPA Launcher"
+OutFile "lrcb-rpa-launcher.exe"
+InstallDir $EXEDIR
+# TODO: icon
+
+Section
+	SetOutPath $TEMP\LRCBRPA
+	File lrcb-rpa.exe
+	File @QT_LIBRARY_PATH@\Qt5Core.dll
+	File @QT_LIBRARY_PATH@\Qt5Gui.dll
+	File @QT_LIBRARY_PATH@\Qt5Multimedia.dll
+	File @QT_LIBRARY_PATH@\Qt5Network.dll
+	File @QT_LIBRARY_PATH@\Qt5Widgets.dll
+	File @QT_LIBRARY_PATH@\Qt5Xml.dll
+	ExecWait "$TEMP\LRCBRPA\lrcb-rpa.exe"
+	SetOutPath $TEMP
+	RMDir /r "$TEMP\LRCBRPA"
+SectionEnd

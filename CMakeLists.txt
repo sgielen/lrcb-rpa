@@ -21,3 +21,25 @@ add_executable(lrcb-rpa WIN32
 	${RESOURCES}
 )
 target_link_libraries(lrcb-rpa Qt5::Widgets Qt5::Multimedia Qt5::Xml)
+
+find_file(NSIS_EXECUTABLE
+	NAMES makensis makensis.exe
+	PATHS $ENV{PROGRAMFILES} $ENV{ProgramFiles} $ENV{PROGRAMW6432} $ENV{ProgramW6432}
+	PATH_SUFFIXES "NSIS"
+)
+
+if(NOT NSIS_EXECUTABLE)
+	message(FATAL_ERROR "NSIS executable not found, can't build launcher")
+else()
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lrcb-rpa-launcher.nsi.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi" @ONLY)
+	add_custom_command(
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.exe"
+		COMMAND "${NSIS_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		DEPENDS "lrcb-rpa.exe"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		VERBATIM
+	)
+
+	add_custom_target(lrcb-rpa-launcher ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.exe")
+endif()
