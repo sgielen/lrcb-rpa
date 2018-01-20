@@ -38,7 +38,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	score_input = new AssessmentScore(input_layout, this);
 	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	auto screenGeom = QApplication::desktop()->availableGeometry(this);
-	score_input->setFixedHeight(screenGeom.height() * float(0.15));
+	score_input->setFixedHeight(screenGeom.height() * float(0.1));
 	auto *score_layout = new QHBoxLayout;
 	score_layout->addStretch();
 	score_layout->addWidget(score_input);
@@ -59,8 +59,14 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	}
 
 	cameraBox = new QComboBox(this);
+
+	Settings set;
+	loadSettings(set);
 	for(auto camera : cameraInfo) {
 		cameraBox->addItem(camera.description());
+		if (set.lastUsedCameraName == camera.description()) {
+			cameraBox->setCurrentIndex(cameraBox->count() - 1);
+		}
 	}
 
 	centralWidget()->layout()->addWidget(cameraBox);
@@ -203,6 +209,11 @@ void AssessmentWindow::switchCamera()
 	if(cameraInfo.at(currentRow) != currentCamera) {
 		// the current camera changed, so restart the image fetcher on another camera
 		currentCamera = cameraInfo.at(currentRow);
+
+		Settings set;
+		loadSettings(set);
+		set.lastUsedCameraName = cameraBox->currentText();
+		saveSettings(set);
 
 		if(imageCapture) {
 			delete imageCapture;

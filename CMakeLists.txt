@@ -43,7 +43,7 @@ else()
 	add_custom_command(
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.exe"
 		COMMAND "${NSIS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
-		DEPENDS "lrcb-rpa" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 		VERBATIM
 	)

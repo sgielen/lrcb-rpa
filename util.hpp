@@ -11,6 +11,7 @@ QLabel *addTitleToWidget(QWidget *widget, QString title);
 struct Settings {
 	QDir storageLocation;
 	QStringList users;
+	QString lastUsedCameraName;
 };
 
 void loadSettings(Settings &);

@@ -85,7 +85,7 @@ void SettingsWindow::save() {
 	loadSettings(s);
 	s.storageLocation = storage_location->text();
 	s.users.clear();
-	for(size_t i = 0; i < users->count(); ++i) {
+	for(int i = 0; i < users->count(); ++i) {
 		s.users.append(users->item(i)->text());
 	}
 	saveSettings(s);

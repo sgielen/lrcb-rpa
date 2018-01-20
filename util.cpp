@@ -35,10 +35,13 @@ void loadSettings(Settings &settings) {
 	settings.storageLocation = storage;
 
 	settings.users = s.value("users").toStringList();
+
+	settings.lastUsedCameraName = s.value("last_used_camera_name").toString();
 }
 
 void saveSettings(Settings const &settings) {
 	QSettings s(orgName, appName);
 	s.setValue("storage_location", settings.storageLocation.absolutePath());
 	s.setValue("users", settings.users);
+	s.setValue("last_used_camera_name", settings.lastUsedCameraName);
 }
