@@ -28,16 +28,22 @@ find_file(NSIS_EXECUTABLE
 	PATH_SUFFIXES "NSIS"
 )
 
+set(QT_LIBRARY_PATH "${_qt5Core_install_prefix}/bin")
+
 if(NOT NSIS_EXECUTABLE)
 	message(FATAL_ERROR "NSIS executable not found, can't build launcher")
 else()
+	add_custom_command(
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe"
+		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:lrcb-rpa>" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe"
+	)
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lrcb-rpa-launcher.nsi.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi" @ONLY)
 	add_custom_command(
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.exe"
-		COMMAND "${NSIS_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
-		DEPENDS "lrcb-rpa.exe"
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		COMMAND "${NSIS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.nsi"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 		VERBATIM
 	)
 
