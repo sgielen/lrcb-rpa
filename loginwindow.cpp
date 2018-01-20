@@ -32,6 +32,7 @@ LoginWindow::LoginWindow(QWidget *parent)
 	centralWidget()->layout()->addWidget(new QLabel("Select your name from the list below.", this));
 
 	users = new QListWidget(this);
+	users->setFont(qApp->font());
 	centralWidget()->layout()->addWidget(users);
 	Settings s;
 	loadSettings(s);

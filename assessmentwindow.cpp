@@ -3,12 +3,14 @@
 #include "excel.hpp"
 #include "util.hpp"
 
+#include <QApplication>
 #include <QCamera>
 #include <QCameraImageCapture>
 #include <QCameraInfo>
 #include <QComboBox>
 #include <QDateTime>
 #include <QDebug>
+#include <QDesktopWidget>
 #include <QLabel>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -35,6 +37,8 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	score_input = new AssessmentScore(input_layout, this);
 	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	auto screenGeom = QApplication::desktop()->availableGeometry(this);
+	score_input->setFixedHeight(screenGeom.height() * float(0.15));
 	auto *score_layout = new QHBoxLayout;
 	score_layout->addStretch();
 	score_layout->addWidget(score_input);
@@ -149,6 +153,7 @@ void AssessmentWindow::startAssessment()
 	webcamImageText->hide();
 	webcamFrame->hide();
 	webcamImage->clear();
+	cameraBox->hide();
 
 	title->setText("Assessment");
 	commandLine->setText("Drag your finger over the bar to enter a confidence level:");

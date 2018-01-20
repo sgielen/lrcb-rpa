@@ -39,6 +39,11 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	// enable larger point size of fonts
+	QFont defaultFont = QApplication::font();
+	defaultFont.setPointSize(14);
+	qApp->setFont(defaultFont);
+
 	LoginWindow *login = nullptr;
 	AssessmentWindow *main = nullptr;
 
