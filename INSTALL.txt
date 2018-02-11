@@ -1,0 +1,41 @@
+Tested on the following hardware:
+* Microsoft Surface Pro 4, min. system requirements 128GB disk, 4 GB RAM, Core M processor (model 1796)
+* Logitech C922 Pro Stream webcam
+
+Installation steps:
+* Unpack tablet, connect it to charger & turn it on
+  * First boot can take a couple of minutes to complete
+* During installation:
+  * Set language to U.S. english
+  * Disable Cortana using the sound icon
+  * Set region to NL
+  * Set keyboard layout to US, no second layout
+  * Accept agreement
+  * Connect to WiFi
+  * Wait until Windows updates are installed
+* During initial configuration:
+  * Set up for personal use
+  * Click 'offline account', bottom left (may be behind the keyboard)
+  * Name: lrcb
+  * No password
+  * 'No' to Cortana
+  * Turn off all privacy options
+* Once logged in, re-check windows updates and install them
+* Make configuration changes
+  * Under Settings -> System -> Power & Sleep, set all four Screen & Sleep settings to "1 hour"
+  * Disable SmartScreen
+    * Under Settings, search for 'SmartScreen'
+    * Go to App & Browser control
+    * Under 'Check apps and files', tick 'Off'
+  * Disable 'Unsafe Applications'
+    * Go to Control Panel
+    * Go to Internet, then Internet Options
+    * Under Security, click Custom level
+    * Find 'Launching Applications and Unsafe Files', set to 'Enable'
+* Download lrcb-rpa-launcher.exe and put it on the Desktop
+* Run it, then go File -> Settings to do initial configuration
+  * Choose an appropriate storage location
+  * Add all necessary users
+* Connect the webcam
+* Start an assessment session and try to perform some assessments
+
