@@ -19,7 +19,7 @@ SettingsWindow::SettingsWindow(QWidget *parent)
 {
 	setWindowTitle("LRCB-RPA - Settings");
 
-	resize(500, 350);
+	resize(1000, 700);
 
 	setLayout(new QVBoxLayout);
 
