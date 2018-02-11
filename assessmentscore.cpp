@@ -66,9 +66,10 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 
 	QColor black(0, 0, 0, 255);
 	QColor white(255, 255, 255, 255);
-	QColor red(255, 0, 0, 255);
-	QColor green(0, 255, 0, 255);
-	QColor yellow(255, 255, 0, 255);
+	QColor lighter(89, 94, 99, 255);
+	QColor red(150, 0, 0, 255);
+	QColor green(10, 150, 0, 255);
+	QColor yellow(150, 150, 0, 255);
 
 	QPoint barLeftTop(margin, marginTop + scoreMarkerUp);
 	QPoint barRightBottom(width() - margin, marginTop + scoreMarkerUp + barHeight);
@@ -83,8 +84,10 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	QRect labelMiddle(QPoint(width() / 2 - margin, height() - textHeight), labelSize);
 	QRect labelRight(QPoint(width() - 2 * margin, height() - textHeight), labelSize);
 
+	QPen textPen = painter.pen();
 	QPen pen = painter.pen();
 	pen.setWidth(3);
+	pen.setColor(lighter);
 	painter.setPen(pen);
 	painter.setBrush(Qt::NoBrush);
 
@@ -99,7 +102,7 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	} else if(layout == AssessmentScoreLayout::GreenWhiteRed) {
 		QLinearGradient fade(barLeftTop, barRightBottom);
 		fade.setColorAt(0, green);
-		fade.setColorAt(0.5, white);
+		fade.setColorAt(0.5, yellow);
 		fade.setColorAt(1, red);
 		painter.fillRect(bar, fade);
 		painter.drawRect(bar);
@@ -115,16 +118,6 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 		if(layout == AssessmentScoreLayout::GreenWhiteRed) {
 			painter.drawLine(barMiddleTop, labelLineMiddle);
 		}
-	}
-
-	// draw the labels
-	if(layout == AssessmentScoreLayout::GreenWhiteRed) {
-		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "confident\nnormal/benign");
-		painter.drawText(labelMiddle, Qt::AlignHCenter | Qt::AlignTop, "unsure");
-		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident\nmalignant");
-	} else {
-		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "unsure");
-		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident");
 	}
 
 	// draw the score marker
@@ -143,6 +136,18 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 		painter.setBrush(white);
 		painter.drawRoundedRect(scoreMarker, 2, 2);
 	}
+
+	// draw the labels
+	painter.setPen(textPen);
+	if(layout == AssessmentScoreLayout::GreenWhiteRed) {
+		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "confident\nnormal/benign");
+		painter.drawText(labelMiddle, Qt::AlignHCenter | Qt::AlignTop, "unsure");
+		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident\nmalignant");
+	} else {
+		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "unsure");
+		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident");
+	}
+
 }
 
 void AssessmentScore::mousePressEvent(QMouseEvent *event)

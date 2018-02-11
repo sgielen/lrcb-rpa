@@ -121,7 +121,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	savedLabel = new QLabel(this);
 	savedLabel->setTextFormat(Qt::RichText);
 	savedLabel->setText("<img src=\":/diskette.png\"/> Assessment saved!");
-	savedLabel->setStyleSheet("QLabel { background-color: #dff0d8; border: 1px solid #a2d48f; }");
+	savedLabel->setStyleSheet("QLabel { color: #000000; background-color: #dff0d8; border: 1px solid #a2d48f; }");
 	savedLabel->setAlignment(Qt::AlignHCenter);
 	savedLabel->hide();
 	thisLayout->addWidget(savedLabel);

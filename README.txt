@@ -8,6 +8,8 @@ radiologist performance assessments (RPA).
 Building
 --------
 
+First, run 'git submodule update --init' to retrieve the submodule(s).
+
 Create a build dir. There, run `cmake`, if necessary with `-DQt5_DIR` pointing at
 a directory containing `Qt5Config.cmake`. Use `make` to build the binary.
 

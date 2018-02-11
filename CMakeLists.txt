@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5 COMPONENTS Core Widgets Multimedia Xml REQUIRED)
 
-qt5_add_resources(RESOURCES rca.qrc)
+qt5_add_resources(RESOURCES rca.qrc QDarkStyleSheet/qdarkstyle/style.qrc)
 
 add_executable(lrcb-rpa WIN32
 	main.cpp

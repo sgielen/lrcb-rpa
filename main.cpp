@@ -39,6 +39,14 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	// set a dark color scheme
+	QFile f(":qdarkstyle/style.qss");
+	if(f.exists()) {
+		f.open(QFile::ReadOnly | QFile::Text);
+		QTextStream ts(&f);
+		qApp->setStyleSheet(ts.readAll());
+	}
+
 	// enable larger point size of fonts
 	QFont defaultFont = QApplication::font();
 	defaultFont.setPointSize(14);
