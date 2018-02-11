@@ -54,14 +54,14 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	QFontMetrics fm(painter.font());
 
 	// all values are in pixels:
-	int const marginTop = 30;
+	int const marginTop = 50;
 	int const margin = 80; // TODO: autodetect from fm.width("...");
 	int const scoreMarkerUp = 3;
 	int const scoreMarkerDown = 3;
 	int const scoreMarkerWidth = 10;
 	int const labelLineDown = 10;
 	int const labelMarginTop = 5;
-	int const textHeight = fm.height();
+	int const textHeight = fm.height() * 2;
 	int const barHeight = height() - textHeight - labelMarginTop - labelLineDown - scoreMarkerUp - marginTop;
 
 	QColor black(0, 0, 0, 255);
@@ -119,9 +119,9 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 
 	// draw the labels
 	if(layout == AssessmentScoreLayout::GreenWhiteRed) {
-		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "confident normal");
+		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "confident\nnormal/benign");
 		painter.drawText(labelMiddle, Qt::AlignHCenter | Qt::AlignTop, "unsure");
-		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident malignant");
+		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident\nmalignant");
 	} else {
 		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "unsure");
 		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident");
@@ -143,16 +143,6 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 		painter.setBrush(white);
 		painter.drawRoundedRect(scoreMarker, 2, 2);
 	}
-}
-
-QSize AssessmentScore::sizeHint() const
-{
-	return QSize(1200, 100);
-}
-
-QSize AssessmentScore::minimumSizeHint() const
-{
-	return sizeHint();
 }
 
 void AssessmentScore::mousePressEvent(QMouseEvent *event)

@@ -17,9 +17,6 @@ public:
 	bool hasScore() const;
 	float getScore() const;
 
-	QSize sizeHint() const override;
-	QSize minimumSizeHint() const override;
-
 public slots:
 	void setScore(float score);
 	void unsetScore();

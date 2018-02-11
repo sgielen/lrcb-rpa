@@ -107,7 +107,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	webcamFrame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	auto screenGeom = QApplication::desktop()->availableGeometry(this);
-	score_input->setFixedSize(screenGeom.width() * float(0.9), screenGeom.height() * float(0.1));
+	score_input->setFixedSize(screenGeom.width() * float(0.9), screenGeom.height() * float(0.15));
 	webcamFrame->setFixedWidth(screenGeom.width() * float(0.9));
 
 	thisLayout->addWidget(webcamFrame);
