@@ -55,7 +55,7 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 
 	// all values are in pixels:
 	int const marginTop = 50;
-	int const margin = 80; // TODO: autodetect from fm.width("...");
+	int const margin = fm.width("normal/benign") / 2;
 	int const scoreMarkerUp = 3;
 	int const scoreMarkerDown = 3;
 	int const scoreMarkerWidth = 30;
