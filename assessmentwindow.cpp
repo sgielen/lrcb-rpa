@@ -29,19 +29,20 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	showFullScreen();
 
 	setCentralWidget(new QWidget);
-	centralWidget()->setLayout(new QVBoxLayout);
+	QVBoxLayout *thisLayout = new QVBoxLayout;
+	centralWidget()->setLayout(thisLayout);
 	title = addTitleToWidget(centralWidget(), "Assessment configuration");
 
-	commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
-	centralWidget()->layout()->addWidget(commandLine);
+	//commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
+	//thisLayout->addWidget(commandLine);
 
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
 		QLabel *cameras = new QLabel("Error: No cameras available -- connect a camera and restart the application.", this);
-		centralWidget()->layout()->addWidget(cameras);
-		dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
+		thisLayout->addWidget(cameras);
+		thisLayout->addStretch();
 		finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
-		centralWidget()->layout()->addWidget(finishAssessmentBtn);
+		thisLayout->addWidget(finishAssessmentBtn);
 
 		connect(finishAssessmentBtn, &QPushButton::pressed, this, &QMainWindow::close);
 		return;
@@ -58,7 +59,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 		}
 	}
 
-	centralWidget()->layout()->addWidget(cameraBox);
+	thisLayout->addWidget(cameraBox);
 	if(cameraInfo.count() == 1) {
 		// if there's only one camera, don't show the combobox at all
 		cameraBox->hide();
@@ -100,20 +101,24 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamFrame->setLayout(new QHBoxLayout);
 	webcamFrame->layout()->addWidget(webcamImage);
 	webcamFrame->layout()->addWidget(webcamButtonsFrame);
-	centralWidget()->layout()->addWidget(webcamFrame);
 
 	score_input = new AssessmentScore(input_layout, this);
-	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	auto screenGeom = QApplication::desktop()->availableGeometry(this);
-	score_input->setFixedHeight(screenGeom.height() * float(0.1));
-	auto *score_layout = new QHBoxLayout;
-	score_layout->addStretch();
-	score_layout->addWidget(score_input);
-	score_layout->addStretch();
-	centralWidget()->layout()->addItem(score_layout);
 	score_input->hide();
 
-	dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
+	// Put the webcam frame above the score input, and make them the same size
+	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	webcamFrame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	auto screenGeom = QApplication::desktop()->availableGeometry(this);
+	score_input->setFixedSize(screenGeom.width() * float(0.9), screenGeom.height() * float(0.1));
+	webcamFrame->setFixedWidth(screenGeom.width() * float(0.9));
+
+	thisLayout->addWidget(webcamFrame);
+	thisLayout->setAlignment(webcamFrame, Qt::AlignHCenter);
+
+	thisLayout->addWidget(score_input);
+	thisLayout->setAlignment(score_input, Qt::AlignHCenter);
+
+	thisLayout->addStretch();
 
 	savedLabel = new QLabel(this);
 	savedLabel->setTextFormat(Qt::RichText);
@@ -121,10 +126,10 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	savedLabel->setStyleSheet("QLabel { background-color: #dff0d8; border: 1px solid #a2d48f; }");
 	savedLabel->setAlignment(Qt::AlignHCenter);
 	savedLabel->hide();
-	centralWidget()->layout()->addWidget(savedLabel);
+	thisLayout->addWidget(savedLabel);
 
 	finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
-	centralWidget()->layout()->addWidget(finishAssessmentBtn);
+	thisLayout->addWidget(finishAssessmentBtn);
 
 	connect(finishAssessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::finishAssessment);
 
@@ -157,7 +162,7 @@ void AssessmentWindow::startAssessment()
 	assessmentStarted = true;
 
 	title->setText("Assessment");
-	commandLine->setText("Drag your finger over the bar to enter a confidence level:");
+	//commandLine->setText("Drag your finger over the bar to enter a confidence level:");
 
 	score_input->unsetScore();
 	score_input->show();

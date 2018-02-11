@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 
 		QObject::connect(login, &LoginWindow::loginPerformed,
 		[&](QString loginName) {
+			login->hide();
 			login->deleteLater();
 			login = nullptr;
 			main = new AssessmentWindow(false, layout);
