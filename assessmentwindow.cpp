@@ -35,17 +35,6 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	commandLine = new QLabel("First, calibrate the webcam so that the study information is clearly readable.", this);
 	centralWidget()->layout()->addWidget(commandLine);
 
-	score_input = new AssessmentScore(input_layout, this);
-	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	auto screenGeom = QApplication::desktop()->availableGeometry(this);
-	score_input->setFixedHeight(screenGeom.height() * float(0.1));
-	auto *score_layout = new QHBoxLayout;
-	score_layout->addStretch();
-	score_layout->addWidget(score_input);
-	score_layout->addStretch();
-	centralWidget()->layout()->addItem(score_layout);
-	score_input->hide();
-
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
 		QLabel *cameras = new QLabel("Error: No cameras available -- connect a camera and restart the application.", this);
@@ -77,10 +66,6 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	connect(cameraBox, &QComboBox::currentTextChanged, this, &AssessmentWindow::switchCamera);
 
-	webcamImageText = new QLabel("Webcam shot");
-	centralWidget()->layout()->addWidget(webcamImageText);
-	webcamImageText->hide();
-
 	webcamImage = new QLabel(this);
 	webcamImage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 
@@ -89,7 +74,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	webcamAcceptButton = new QPushButton(QIcon(":/tick.png"), "Accept", this);
 	webcamButtonsFrame->layout()->addWidget(webcamAcceptButton);
-	QPushButton *webcamRetakeButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
+	webcamRetakeButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
 	webcamButtonsFrame->layout()->addWidget(webcamRetakeButton);
 	autoAccept = new QTimer(this);
 	autoAccept->setInterval(1000);
@@ -105,7 +90,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamAcceptButton->setText("Start assessment");
 	webcamAcceptButton->setEnabled(false);
 	webcamRetakeButton->hide();
-	connect(webcamAcceptButton, &QPushButton::pressed, this, [this, webcamRetakeButton]() {
+	connect(webcamAcceptButton, &QPushButton::pressed, this, [this]() {
 		webcamAcceptButton->setText("Accept");
 		webcamRetakeButton->show();
 		startAssessment();
@@ -116,6 +101,17 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamFrame->layout()->addWidget(webcamImage);
 	webcamFrame->layout()->addWidget(webcamButtonsFrame);
 	centralWidget()->layout()->addWidget(webcamFrame);
+
+	score_input = new AssessmentScore(input_layout, this);
+	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	auto screenGeom = QApplication::desktop()->availableGeometry(this);
+	score_input->setFixedHeight(screenGeom.height() * float(0.1));
+	auto *score_layout = new QHBoxLayout;
+	score_layout->addStretch();
+	score_layout->addWidget(score_input);
+	score_layout->addStretch();
+	centralWidget()->layout()->addItem(score_layout);
+	score_input->hide();
 
 	dynamic_cast<QVBoxLayout*>(centralWidget()->layout())->addStretch();
 
@@ -155,11 +151,10 @@ void AssessmentWindow::loginPerformed(QString name)
 
 void AssessmentWindow::startAssessment()
 {
-	// TODO: stop taking webcam pictures automatically
-	webcamImageText->hide();
-	webcamFrame->hide();
-	webcamImage->clear();
 	cameraBox->hide();
+	webcamAcceptButton->setEnabled(false);
+	webcamRetakeButton->setEnabled(false);
+	assessmentStarted = true;
 
 	title->setText("Assessment");
 	commandLine->setText("Drag your finger over the bar to enter a confidence level:");
@@ -177,8 +172,8 @@ void AssessmentWindow::startAssessment()
 void AssessmentWindow::scoreEntered()
 {
 	finishAssessmentBtn->setEnabled(false);
-	webcamImageText->show();
-	webcamFrame->show();
+	webcamAcceptButton->setEnabled(true);
+	webcamRetakeButton->setEnabled(true);
 
 	assert(camera);
 	assert(imageCapture);
@@ -259,7 +254,10 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 		auto const labelWidth = webcamImage->width() - 2 * webcamImage->frameWidth();
 		pixmap = pixmap.scaledToWidth(labelWidth);
 		webcamImage->setPixmap(pixmap);
-		webcamAcceptButton->setEnabled(true);
+
+		if(!assessmentStarted) {
+			webcamAcceptButton->setEnabled(true);
+		}
 
 		if(!lastCaptureFilename.isEmpty()) {
 			QFile lastCaptureFile(lastCaptureFilename);

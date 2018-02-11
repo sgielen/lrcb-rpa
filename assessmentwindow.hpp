@@ -36,6 +36,7 @@ private slots:
 
 private:
 	bool skipSetup;
+	bool assessmentStarted = false;
 
 	QString userName;
 
@@ -52,8 +53,8 @@ private:
 
 	QFrame *webcamFrame = nullptr;
 	QLabel *webcamImage = nullptr;
-	QLabel *webcamImageText = nullptr;
 	QPushButton *webcamAcceptButton = nullptr;
+	QPushButton *webcamRetakeButton = nullptr;
 	QString lastCaptureFilename;
 
 	const int autoAcceptSeconds = 4;
