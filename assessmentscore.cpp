@@ -84,7 +84,7 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	QRect labelRight(QPoint(width() - 2 * margin, height() - textHeight), labelSize);
 
 	QPen pen = painter.pen();
-	pen.setWidth(2);
+	pen.setWidth(3);
 	painter.setPen(pen);
 	painter.setBrush(Qt::NoBrush);
 
