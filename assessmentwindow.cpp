@@ -74,8 +74,10 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamButtonsFrame->setLayout(new QVBoxLayout);
 
 	webcamAcceptButton = new QPushButton(QIcon(":/tick.png"), "Accept", this);
+	webcamAcceptButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	webcamButtonsFrame->layout()->addWidget(webcamAcceptButton);
 	webcamRetakeButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
+	webcamRetakeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	webcamButtonsFrame->layout()->addWidget(webcamRetakeButton);
 	autoAccept = new QTimer(this);
 	autoAccept->setInterval(1000);
@@ -90,12 +92,8 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	// But for now, temporarily re-purpose the accept button to start the assessment session
 	webcamAcceptButton->setText("Start assessment");
 	webcamAcceptButton->setEnabled(false);
-	webcamRetakeButton->hide();
-	connect(webcamAcceptButton, &QPushButton::pressed, this, [this]() {
-		webcamAcceptButton->setText("Accept");
-		webcamRetakeButton->show();
-		startAssessment();
-	});
+	webcamRetakeButton->setEnabled(false);
+	connect(webcamAcceptButton, &QPushButton::pressed, this, &AssessmentWindow::startAssessment);
 
 	webcamFrame = new QFrame(this);
 	webcamFrame->setLayout(new QHBoxLayout);
@@ -157,6 +155,7 @@ void AssessmentWindow::loginPerformed(QString name)
 void AssessmentWindow::startAssessment()
 {
 	cameraBox->hide();
+	webcamAcceptButton->setText("Accept");
 	webcamAcceptButton->setEnabled(false);
 	webcamRetakeButton->setEnabled(false);
 	assessmentStarted = true;
