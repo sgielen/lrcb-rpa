@@ -31,7 +31,7 @@ find_file(NSIS_EXECUTABLE
 set(QT_LIBRARY_PATH "${_qt5Core_install_prefix}/bin")
 
 if(NOT NSIS_EXECUTABLE)
-	message(FATAL_ERROR "NSIS executable not found, can't build launcher")
+	message("NSIS executable not found, can't build launcher")
 else()
 	add_custom_command(
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe"
