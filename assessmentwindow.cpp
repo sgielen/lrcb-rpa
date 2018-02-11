@@ -171,6 +171,8 @@ void AssessmentWindow::startAssessment()
 
 	finishAssessmentBtn->setText("Finish assessment session and exit");
 	finishAssessmentBtn->setEnabled(true);
+	finishAssessmentBtn->clearFocus();
+	finishAssessmentBtn->setDown(false);
 	webcamAcceptButton->disconnect(this);
 	connect(webcamAcceptButton, &QPushButton::clicked, this, &AssessmentWindow::saveAssessment);
 }
