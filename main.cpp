@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	QCommandLineOption skipDialogsOption("s", "Skip dialogs and start assessment immediately");
 	parser.addOption(skipDialogsOption);
 
-	QCommandLineOption layoutStyle("l", "Use this score bar layout", "layout", "greenred");
+	QCommandLineOption layoutStyle("l", "Use this score bar layout", "layout", "greenwhitered");
 	parser.addOption(layoutStyle);
 
 	parser.process(app);
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	bool skipDialogs = parser.isSet(skipDialogsOption);
 
 	QString layoutstr = parser.value(layoutStyle);
-	AssessmentScoreLayout layout = AssessmentScoreLayout::GreenRed;
+	AssessmentScoreLayout layout = AssessmentScoreLayout::GreenWhiteRed;
 
 	if(layoutstr.toLower() == "greenred") {
 		layout = AssessmentScoreLayout::GreenRed;
