@@ -87,6 +87,8 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	connect(webcamRetakeButton, &QPushButton::clicked, this, [this]() {
 		autoAccept->stop();
 		webcamAcceptButton->setText("Accept");
+		webcamRetakeButton->clearFocus();
+		webcamRetakeButton->setDown(false);
 	});
 
 	// But for now, temporarily re-purpose the accept button to start the assessment session
