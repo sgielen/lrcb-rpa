@@ -23,6 +23,9 @@ Then, in a build dir, run:
 This should produce 'lrcb-rpa-launcher.exe', which is a launcher for lrcb-rpa.exe which
 ensures the Qt DLLs are available as well.
 
+To get a proper setup file, use 'lrcb-rpa-setup' as a target instead of
+'lrcb-rpa-launcher'.
+
 Installation
 ------------
 

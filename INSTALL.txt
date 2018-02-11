@@ -32,8 +32,8 @@ Installation steps:
     * Go to Internet, then Internet Options
     * Under Security, click Custom level
     * Find 'Launching Applications and Unsafe Files', set to 'Enable'
-* Download lrcb-rpa-launcher.exe and put it on the Desktop
-* Run it, then go File -> Settings to do initial configuration
+* Download lrcb-rpa-setup.exe and run it.
+* Run the LRCB-RPA shortcut from Desktop, then go File -> Settings to do initial configuration
   * Choose an appropriate storage location
   * Add all necessary users
 * Connect the webcam

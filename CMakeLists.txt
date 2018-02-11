@@ -49,4 +49,16 @@ else()
 	)
 
 	add_custom_target(lrcb-rpa-launcher ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-launcher.exe")
+
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lrcb-rpa-setup.nsi.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-setup.nsi" @ONLY)
+	add_custom_command(
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-setup.exe"
+		COMMAND "${NSIS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-setup.nsi"
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa.exe" "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-setup.nsi"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+		VERBATIM
+	)
+
+	add_custom_target(lrcb-rpa-setup ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lrcb-rpa-setup.exe")
 endif()
