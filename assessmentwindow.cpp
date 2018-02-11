@@ -38,7 +38,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	cameraInfo = QCameraInfo::availableCameras();
 	if(cameraInfo.count() == 0) {
-		QLabel *cameras = new QLabel("Error: No cameras available -- connect a camera and restart the application.", this);
+		QLabel *cameras = new QLabel("Error: No cameras seem to be connected. First, try restarting this application. If that doesn't help, check the cabling and hardware support.", this);
 		thisLayout->addWidget(cameras);
 		thisLayout->addStretch();
 		finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
