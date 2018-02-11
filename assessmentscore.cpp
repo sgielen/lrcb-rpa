@@ -58,7 +58,7 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	int const margin = 80; // TODO: autodetect from fm.width("...");
 	int const scoreMarkerUp = 3;
 	int const scoreMarkerDown = 3;
-	int const scoreMarkerWidth = 10;
+	int const scoreMarkerWidth = 30;
 	int const labelLineDown = 10;
 	int const labelMarginTop = 5;
 	int const textHeight = fm.height() * 2;
@@ -133,7 +133,7 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 
 			scoreMarker = QRect(QPoint(scoreMarkerX + margin - scoreMarkerWidth / 2, marginTop), scoreMarkerSize);
 		}
-		painter.setBrush(white);
+		painter.setBrush(lighter);
 		painter.drawRoundedRect(scoreMarker, 2, 2);
 	}
 
