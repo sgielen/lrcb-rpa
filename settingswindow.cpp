@@ -34,7 +34,7 @@ SettingsWindow::SettingsWindow(QWidget *parent)
 	storage_layout->addWidget(storage_location);
 	storage_layout->addWidget(storage_browse);
 	layout()->addItem(storage_layout);
-	connect(storage_browse, &QPushButton::pressed, this, &SettingsWindow::storageBrowse);
+	connect(storage_browse, &QPushButton::clicked, this, &SettingsWindow::storageBrowse);
 
 	// List of users
 	layout()->addWidget(new QLabel("User list", this));

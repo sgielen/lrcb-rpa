@@ -43,7 +43,7 @@ LoginWindow::LoginWindow(QWidget *parent)
 	QPushButton *login = new QPushButton("Log in", this);
 	centralWidget()->layout()->addWidget(login);
 
-	connect(login, &QPushButton::pressed, this, &LoginWindow::performLogin);
+	connect(login, &QPushButton::clicked, this, &LoginWindow::performLogin);
 }
 
 void LoginWindow::about()

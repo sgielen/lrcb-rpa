@@ -44,7 +44,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 		finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
 		thisLayout->addWidget(finishAssessmentBtn);
 
-		connect(finishAssessmentBtn, &QPushButton::pressed, this, &QMainWindow::close);
+		connect(finishAssessmentBtn, &QPushButton::clicked, this, &QMainWindow::close);
 		return;
 	}
 
@@ -84,7 +84,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	autoAccept->setSingleShot(false);
 	connect(autoAccept, &QTimer::timeout, this, &AssessmentWindow::countDown);
 
-	connect(webcamRetakeButton, &QPushButton::pressed, this, [this]() {
+	connect(webcamRetakeButton, &QPushButton::clicked, this, [this]() {
 		autoAccept->stop();
 		webcamAcceptButton->setText("Accept");
 	});
@@ -93,7 +93,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamAcceptButton->setText("Start assessment");
 	webcamAcceptButton->setEnabled(false);
 	webcamRetakeButton->setEnabled(false);
-	connect(webcamAcceptButton, &QPushButton::pressed, this, &AssessmentWindow::startAssessment);
+	connect(webcamAcceptButton, &QPushButton::clicked, this, &AssessmentWindow::startAssessment);
 
 	webcamFrame = new QFrame(this);
 	webcamFrame->setLayout(new QHBoxLayout);
@@ -129,7 +129,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	finishAssessmentBtn = new QPushButton("Cancel assessment session and exit", this);
 	thisLayout->addWidget(finishAssessmentBtn);
 
-	connect(finishAssessmentBtn, &QPushButton::pressed, this, &AssessmentWindow::finishAssessment);
+	connect(finishAssessmentBtn, &QPushButton::clicked, this, &AssessmentWindow::finishAssessment);
 
 	switchCamera();
 
@@ -170,7 +170,7 @@ void AssessmentWindow::startAssessment()
 	finishAssessmentBtn->setText("Finish assessment session and exit");
 	finishAssessmentBtn->setEnabled(true);
 	webcamAcceptButton->disconnect(this);
-	connect(webcamAcceptButton, &QPushButton::pressed, this, &AssessmentWindow::saveAssessment);
+	connect(webcamAcceptButton, &QPushButton::clicked, this, &AssessmentWindow::saveAssessment);
 }
 
 void AssessmentWindow::scoreEntered()
