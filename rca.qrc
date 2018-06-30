@@ -9,5 +9,6 @@
 		<file>tick.png</file>
 		<file>diskette.png</file>
 		<file>clock_stop.png</file>
+		<file>camera_black.png</file>
 	</qresource>
 </RCC>

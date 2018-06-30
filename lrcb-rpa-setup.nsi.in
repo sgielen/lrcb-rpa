@@ -44,6 +44,9 @@ Section
 	File @QT_LIBRARY_PATH@\..\plugins\imageformats\qwebp.dll
 	SetOutPath $INSTDIR\mediaservice
 	File @QT_LIBRARY_PATH@\..\plugins\mediaservice\dsengine.dll
+	SetOutPath $INSTDIR\WebcamControl
+	File @CMAKE_CURRENT_SOURCE_DIR@\WebcamControl\DirectShowLib.dll
+	File @CMAKE_CURRENT_SOURCE_DIR@\WebcamControl\WebcamControl.exe
 	SetOutPath $INSTDIR
 
 	createShortCut "$DESKTOP\LRCB-RPA.lnk" "$INSTDIR\lrcb-rpa.exe" "" "$INSTDIR\lrcb-rpa.ico"

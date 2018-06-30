@@ -17,6 +17,8 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QCheckBox>
+#include <QProcess>
 
 #include <cassert>
 
@@ -76,7 +78,10 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamAcceptButton = new QPushButton(QIcon(":/tick.png"), "Accept", this);
 	webcamAcceptButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	webcamButtonsFrame->layout()->addWidget(webcamAcceptButton);
-	webcamRetakeButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
+	webcamStopCountdownButton = new QPushButton(QIcon(":/clock_stop.png"), "Stop countdown", this);
+	webcamStopCountdownButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	webcamButtonsFrame->layout()->addWidget(webcamStopCountdownButton);
+	webcamRetakeButton = new QPushButton(QIcon(":/camera_black.png"), "Retake picture", this);
 	webcamRetakeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	webcamButtonsFrame->layout()->addWidget(webcamRetakeButton);
 	autoAccept = new QTimer(this);
@@ -84,9 +89,16 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	autoAccept->setSingleShot(false);
 	connect(autoAccept, &QTimer::timeout, this, &AssessmentWindow::countDown);
 
-	connect(webcamRetakeButton, &QPushButton::clicked, this, [this]() {
+	connect(webcamStopCountdownButton, &QPushButton::clicked, this, [this]() {
 		autoAccept->stop();
 		webcamAcceptButton->setText("Accept");
+		webcamStopCountdownButton->clearFocus();
+		webcamStopCountdownButton->setDown(false);
+	});
+
+	connect(webcamRetakeButton, &QPushButton::clicked, this, [this]() {
+		capturing = true;
+		captureOne = true;
 		webcamRetakeButton->clearFocus();
 		webcamRetakeButton->setDown(false);
 	});
@@ -94,12 +106,34 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	// But for now, temporarily re-purpose the accept button to start the assessment session
 	webcamAcceptButton->setText("Start assessment");
 	webcamAcceptButton->setEnabled(false);
+	webcamStopCountdownButton->setEnabled(false);
 	webcamRetakeButton->setEnabled(false);
 	connect(webcamAcceptButton, &QPushButton::clicked, this, &AssessmentWindow::startAssessment);
 
+	//webcamAutoFocus = new QCheckBox(this);
+	//webcamAutoFocus->setChecked(true);
+	webcamFocusSetting = new QSlider(Qt::Horizontal, this);
+	webcamFocusSetting->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	webcamFocusSetting->setRange(0, 100);
+	//webcamFocusSetting->setDisabled(true);
+
+	//connect(webcamAutoFocus, SIGNAL(stateChanged(int)), this, SLOT(focusSettingsChanged()));
+	connect(webcamFocusSetting, SIGNAL(sliderMoved(int)), this, SLOT(focusSettingsChanged()));
+	focusSettingsChanged();
+
+	webcamFocusFrame = new QFrame(this);
+	webcamFocusFrame->setLayout(new QHBoxLayout);
+	//webcamFocusFrame->layout()->addWidget(webcamAutoFocus);
+	webcamFocusFrame->layout()->addWidget(webcamFocusSetting);
+
+	webcamLeftFrame = new QFrame(this);
+	webcamLeftFrame->setLayout(new QVBoxLayout);
+	webcamLeftFrame->layout()->addWidget(webcamImage);
+	webcamLeftFrame->layout()->addWidget(webcamFocusFrame);
+
 	webcamFrame = new QFrame(this);
 	webcamFrame->setLayout(new QHBoxLayout);
-	webcamFrame->layout()->addWidget(webcamImage);
+	webcamFrame->layout()->addWidget(webcamLeftFrame);
 	webcamFrame->layout()->addWidget(webcamButtonsFrame);
 
 	score_input = new AssessmentScore(input_layout, this);
@@ -110,10 +144,13 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamFrame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	auto screenGeom = QApplication::desktop()->availableGeometry(this);
 	score_input->setFixedSize(screenGeom.width() * float(0.9), screenGeom.height() * float(0.15));
+	webcamLeftFrame->setFixedWidth(screenGeom.width() * float(0.30));
 	webcamFrame->setFixedWidth(screenGeom.width() * float(0.9));
 
 	thisLayout->addWidget(webcamFrame);
 	thisLayout->setAlignment(webcamFrame, Qt::AlignHCenter);
+
+	thisLayout->addStretch();
 
 	thisLayout->addWidget(score_input);
 	thisLayout->setAlignment(score_input, Qt::AlignHCenter);
@@ -159,8 +196,10 @@ void AssessmentWindow::startAssessment()
 	cameraBox->hide();
 	webcamAcceptButton->setText("Accept");
 	webcamAcceptButton->setEnabled(false);
+	webcamStopCountdownButton->setEnabled(false);
 	webcamRetakeButton->setEnabled(false);
 	assessmentStarted = true;
+	capturing = true;
 
 	title->setText("Assessment");
 	//commandLine->setText("Drag your finger over the bar to enter a confidence level:");
@@ -181,6 +220,7 @@ void AssessmentWindow::scoreEntered()
 {
 	finishAssessmentBtn->setEnabled(false);
 	webcamAcceptButton->setEnabled(true);
+	webcamStopCountdownButton->setEnabled(true);
 	webcamRetakeButton->setEnabled(true);
 
 	assert(camera);
@@ -188,6 +228,7 @@ void AssessmentWindow::scoreEntered()
 
 	autoAcceptSecondsRemaining = autoAcceptSeconds + 1;
 	autoAccept->start();
+	capturing = false;
 	countDown();
 
 	// TODO: make behaviour of imageSaved() different if we take a capture
@@ -226,6 +267,8 @@ void AssessmentWindow::switchCamera()
 			delete camera;
 		}
 
+		capturing = true;
+
 		camera = new QCamera(currentCamera);
 
 		imageCapture = new QCameraImageCapture(camera);
@@ -257,7 +300,7 @@ void AssessmentWindow::takeCapture(bool ready)
 void AssessmentWindow::imageSaved(int id, const QString &filename)
 {
 	QFile file(filename);
-	if(file.exists()) {
+	if(file.exists() && capturing) {
 		QPixmap pixmap(filename);
 		auto const labelWidth = webcamImage->width() - 2 * webcamImage->frameWidth();
 		pixmap = pixmap.scaledToWidth(labelWidth);
@@ -274,6 +317,11 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 			}
 		}
 		lastCaptureFilename = filename;
+
+		if (captureOne) {
+			capturing = false;
+			captureOne = false;
+		}
 	}
 
 	camera->unlock();
@@ -329,5 +377,58 @@ void AssessmentWindow::finishAssessment() {
 		"Are you sure you want to finish the assessment and exit the application?");
 	if(button == QMessageBox::Yes) {
 		close();
+	}
+}
+
+void AssessmentWindow::focusSettingsChanged() {
+	bool autoFocus = false; // webcamAutoFocus->isChecked();
+	float value = float(webcamFocusSetting->value()) / webcamFocusSetting->maximum();
+
+	// Find WebcamControl.exe
+	QString wc;
+	for (QString path : {".", "WebcamControl", "..", "../WebcamControl"}) {
+		QString fp = path + "/WebcamControl.exe";
+		if (QFile::exists(fp)) {
+			wc = fp;
+		}
+	}
+
+	if (wc.isEmpty()) {
+		QMessageBox::critical(this, "Camera error", "Cannot change webcam focus settings: WebcamControl.exe not found");
+		return;
+	}
+
+	QStringList arguments;
+	arguments << "focus" << currentCamera.description();
+
+	if (autoFocus) {
+		webcamFocusSetting->setDisabled(true);
+		arguments << "auto";
+	}
+	else {
+		webcamFocusSetting->setDisabled(false);
+		arguments << QString::number(value);
+	}
+
+	if (camera == nullptr) {
+		// No camera chosen yet, don't call WebcamControl
+		return;
+	}
+
+	QProcess control;
+	control.start(wc, arguments);
+	if (!control.waitForStarted(1000) || !control.waitForFinished(1000)) {
+		QMessageBox::critical(this, "Camera error", "Cannot change webcam focus settings: WebcamControl.exe did not finish");
+		return;
+	}
+
+	QByteArray output = control.readAllStandardError() + control.readAllStandardOutput();
+	if (output.isEmpty()) {
+		output = "Unknown error";
+	}
+
+	if (control.exitCode() != 0) {
+		QMessageBox::critical(this, "Camera error", "Cannot change webcam focus settings: " + QString(output));
+		return;
 	}
 }

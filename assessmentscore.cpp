@@ -140,9 +140,9 @@ void AssessmentScore::paintEvent(QPaintEvent *)
 	// draw the labels
 	painter.setPen(textPen);
 	if(layout == AssessmentScoreLayout::GreenWhiteRed) {
-		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "confident\nnormal/benign");
-		painter.drawText(labelMiddle, Qt::AlignHCenter | Qt::AlignTop, "unsure");
-		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident\nmalignant");
+		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "normaal");
+		painter.drawText(labelMiddle, Qt::AlignHCenter | Qt::AlignTop, "onzeker");
+		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "radiologisch\nmaligne");
 	} else {
 		painter.drawText(labelLeft, Qt::AlignHCenter | Qt::AlignTop, "unsure");
 		painter.drawText(labelRight, Qt::AlignHCenter | Qt::AlignTop, "confident");

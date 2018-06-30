@@ -12,6 +12,8 @@ class QComboBox;
 class QLabel;
 class QPushButton;
 class QFrame;
+class QCheckBox;
+class QSlider;
 
 struct AssessmentWindow : public QMainWindow
 {
@@ -33,6 +35,7 @@ private slots:
 	void saveAssessment();
 	void countDown();
 	void finishAssessment();
+	void focusSettingsChanged();
 
 private:
 	bool skipSetup;
@@ -54,8 +57,17 @@ private:
 	QFrame *webcamFrame = nullptr;
 	QLabel *webcamImage = nullptr;
 	QPushButton *webcamAcceptButton = nullptr;
+	QPushButton *webcamStopCountdownButton = nullptr;
 	QPushButton *webcamRetakeButton = nullptr;
 	QString lastCaptureFilename;
+
+	//QCheckBox *webcamAutoFocus = nullptr;
+	QSlider *webcamFocusSetting = nullptr;
+	QFrame *webcamFocusFrame = nullptr;
+	QFrame *webcamLeftFrame = nullptr;
+
+	bool capturing = false;
+	bool captureOne = false;
 
 	const int autoAcceptSeconds = 4;
 	int autoAcceptSecondsRemaining = 0;
