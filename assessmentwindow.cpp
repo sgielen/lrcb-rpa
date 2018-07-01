@@ -116,6 +116,13 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 	webcamFocusSetting->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	webcamFocusSetting->setRange(0, 100);
 	//webcamFocusSetting->setDisabled(true);
+	// Make the slider handle bigger so it can be touched easily
+	QString largerButton =
+		".QSlider::handle:horizontal {\n"
+		"  width: 46px;\n"
+		"  height: 200px;\n"
+		"}\n";
+	webcamFocusSetting->setStyleSheet(largerButton);
 
 	//connect(webcamAutoFocus, SIGNAL(stateChanged(int)), this, SLOT(focusSettingsChanged()));
 	connect(webcamFocusSetting, SIGNAL(sliderMoved(int)), this, SLOT(focusSettingsChanged()));
@@ -286,6 +293,8 @@ void AssessmentWindow::switchCamera()
 
 		camera->start();
 		camera->searchAndLock();
+
+		focusSettingsChanged();
 	}
 }
 
@@ -322,6 +331,10 @@ void AssessmentWindow::imageSaved(int id, const QString &filename)
 			capturing = false;
 			captureOne = false;
 		}
+	}
+	else if (file.exists()) {
+		// not capturing, so remove it again
+		file.remove();
 	}
 
 	camera->unlock();
