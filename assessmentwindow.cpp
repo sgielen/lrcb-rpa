@@ -65,6 +65,13 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 		return;
 	}
 
+	if (!captureDir.isValid()) {
+		hide();
+		QMessageBox::critical(this, "LRCB-RPA Fatal Error",
+			"A temporary directory could not be created for images:\n" + captureDir.errorString());
+		exit(1);
+	}
+
 	cameraBox = new QComboBox(this);
 
 	Settings set;
@@ -323,7 +330,9 @@ void AssessmentWindow::takeCapture(bool ready)
 {
 	if(ready && camera && imageCapture) {
 		camera->searchAndLock();
-		imageCapture->capture();
+		// Image extension is automatically added
+		QString captureName = captureDir.filePath(QString::number(++imageCounter));
+		imageCapture->capture(captureName);
 	}
 }
 

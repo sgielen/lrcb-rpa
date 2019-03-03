@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QCameraInfo>
+#include <QTemporaryDir>
 #include <QFile>
 
 #include "assessmentscore.hpp"
@@ -43,6 +44,9 @@ private:
 	bool assessmentStarted = false;
 
 	QString userName;
+
+	QTemporaryDir captureDir;
+	uint64_t imageCounter = 0;
 
 	QFile logfile;
 
