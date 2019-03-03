@@ -145,6 +145,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 	score_input = new AssessmentScore(input_layout, this);
 	score_input->hide();
+	installEventFilter(score_input);
 
 	// Put the webcam frame above the score input, and make them the same size
 	score_input->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

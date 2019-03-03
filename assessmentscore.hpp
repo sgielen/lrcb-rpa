@@ -28,6 +28,8 @@ private:
 	void paintEvent(QPaintEvent *) override;
 	void mousePressEvent(QMouseEvent *) override;
 	void mouseReleaseEvent(QMouseEvent *) override;
+	void mouseMoveEvent(QMouseEvent *) override;
+	bool eventFilter(QObject *, QEvent *) override;
 
 	AssessmentScoreLayout layout;
 	bool have_score = false;

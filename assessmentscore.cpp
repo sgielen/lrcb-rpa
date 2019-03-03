@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QTextStream>
+#include <cassert>
 
 static inline QTextStream &operator<<(QTextStream &s, const QPoint &p)
 {
@@ -154,13 +155,14 @@ void AssessmentScore::mousePressEvent(QMouseEvent *event)
 {
 	inDrag = true;
 	dragStartedPos = event->pos();
+	event->accept();
 }
-
-// TODO: perhaps do below on mouseMove, and only emit scoreEntered on mouseRelease?
 
 void AssessmentScore::mouseReleaseEvent(QMouseEvent *event)
 {
-	static const int MAX_X_OFFSET = 60;
+	// Note, this function can be called from the event filter if the mouse is released
+	// outside of our widget after a drag over us.
+	static const int MAX_X_OFFSET = 120;
 	static const float MIN_Y_FACTION = 0.5;
 
 	if(inDrag) {
@@ -184,4 +186,61 @@ void AssessmentScore::mouseReleaseEvent(QMouseEvent *event)
 	}
 	inDrag = false;
 	repaint();
+	event->accept();
+}
+
+void AssessmentScore::mouseMoveEvent(QMouseEvent *event)
+{
+	// Note, this function can be called from the event filter if the mouse is moving over
+	// us, even in a drag which didn't start inside us.
+	if (!inDrag && event->buttons() & Qt::LeftButton) {
+		// We weren't in a drag before, but the mouse is pressed and is moving over us,
+		// so we are in a drag now!
+		mousePressEvent(event);
+	}
+}
+
+bool AssessmentScore::eventFilter(QObject *object, QEvent *e)
+{
+	if (e->type() == QEvent::MouseMove) {
+		QMouseEvent *me = dynamic_cast<QMouseEvent*>(e);
+		assert(me);
+
+		auto localPos = mapFromGlobal(me->globalPos());
+		if (localPos.x() < 0 || localPos.y() < 0 || localPos.x() > width() || localPos.y() > height()) {
+			// Not a move over me, ignore it
+			return false;
+		}
+
+		// Copy to a local event, then give it to ourselves as if the move happened over us
+		QMouseEvent event(
+			me->type(),
+			localPos,
+			me->windowPos(),
+			me->screenPos(),
+			me->button(),
+			me->buttons(),
+			me->modifiers(),
+			me->source());
+		mouseMoveEvent(&event);
+	} else if (e->type() == QEvent::MouseButtonRelease && inDrag) {
+		QMouseEvent *me = dynamic_cast<QMouseEvent*>(e);
+		assert(me);
+
+		// Here, we do want to allow mouse releases while not over us, as we are
+		// currently handling a drag that we know went over us (inDrag is true)
+		auto localPos = mapFromGlobal(me->globalPos());
+
+		QMouseEvent event(
+			me->type(),
+			localPos,
+			me->windowPos(),
+			me->screenPos(),
+			me->button(),
+			me->buttons(),
+			me->modifiers(),
+			me->source());
+		mouseReleaseEvent(&event);
+	}
+	return false;
 }
