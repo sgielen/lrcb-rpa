@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QCameraInfo>
+#include <QFile>
 
 #include "assessmentscore.hpp"
 
@@ -42,6 +43,8 @@ private:
 	bool assessmentStarted = false;
 
 	QString userName;
+
+	QFile logfile;
 
 	QLabel *title = nullptr;
 	QLabel *commandLine = nullptr;

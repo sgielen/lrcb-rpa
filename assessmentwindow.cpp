@@ -22,10 +22,25 @@
 
 #include <cassert>
 
+static inline void log(QIODevice &file, QString message) {
+	QDateTime now = QDateTime::currentDateTime();
+	QTextStream ts(&file);
+	ts << now.toString("[yyyy-MM-dd][hh:mm:ss] ") << message << endl;
+}
+
+template <typename Arg, typename... Args>
+static inline void log(QIODevice &file, QString message, Arg &arg, Args &... args) {
+	log(file, message.arg(arg), args...);
+}
+
+
 AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, QWidget *parent)
 : QMainWindow(parent)
 , skipSetup(s)
+, logfile("lrcb-rpa.log")
 {
+	logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
+	log(logfile, "Application started.");
 	setWindowTitle("LRCB-RPA - Assessment");
 
 	showFullScreen();
@@ -187,6 +202,7 @@ AssessmentWindow::AssessmentWindow(bool s, AssessmentScoreLayout input_layout, Q
 
 AssessmentWindow::~AssessmentWindow()
 {
+	log(logfile, "Application exited.");
 	QFile lastCaptureFile(lastCaptureFilename);
 	if(!lastCaptureFilename.isEmpty() && lastCaptureFile.exists()) {
 		lastCaptureFile.remove();
@@ -196,11 +212,13 @@ AssessmentWindow::~AssessmentWindow()
 void AssessmentWindow::loginPerformed(QString name)
 {
 	userName = name;
+	log(logfile, "Logged in as %1.", name);
 	show();
 }
 
 void AssessmentWindow::startAssessment()
 {
+	log(logfile, "Assessment starting.");
 	cameraBox->hide();
 	webcamAcceptButton->setText("Accept");
 	webcamAcceptButton->setEnabled(false);
@@ -266,6 +284,8 @@ void AssessmentWindow::switchCamera()
 		loadSettings(set);
 		set.lastUsedCameraName = cameraBox->currentText();
 		saveSettings(set);
+
+		log(logfile, "Switched camera to %1.", cameraBox->currentText());
 
 		if(imageCapture) {
 			delete imageCapture;
@@ -375,6 +395,8 @@ void AssessmentWindow::saveAssessment()
 
 		QString excelFileName = now.toString("yyyy-MM-dd") + ".xls";
 		QString excelFilePath = s.storageLocation.absoluteFilePath(excelFileName);
+		log(logfile, "Saving assessment (score %1, filename %2).",
+			QString::number(score_input->getScore(), 'f', 2), fileName);
 		if(!addRowToExcel(excelFilePath, now, userName, score_input->getScore(), fileName)) {
 			QMessageBox::critical(this, "Assessment error", "The assessment could not be saved: the Excel file could not be updated.");
 			return;
@@ -390,6 +412,7 @@ void AssessmentWindow::finishAssessment() {
 	auto button = QMessageBox::question(this, "Finish assessment?",
 		"Are you sure you want to finish the assessment and exit the application?");
 	if(button == QMessageBox::Yes) {
+		log(logfile, "Assessment session finished, exiting.");
 		close();
 	}
 }
