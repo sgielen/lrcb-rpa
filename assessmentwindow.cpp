@@ -29,7 +29,7 @@ static inline void log(QIODevice &file, QString message) {
 }
 
 template <typename Arg, typename... Args>
-static inline void log(QIODevice &file, QString message, Arg &arg, Args &... args) {
+static inline void log(QIODevice &file, QString message, Arg const &arg, Args &... args) {
 	log(file, message.arg(arg), args...);
 }
 
