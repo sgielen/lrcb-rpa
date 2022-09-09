@@ -1,9 +1,11 @@
 LRCB-RPA
 ========
 
-This project builds a tool for the Dutch expert centre for screening (LRCB,
+This project builds a tool for the Dutch Expert Centre for Screening (LRCB,
 Landelijk Referentiecentrum voor Bevolkingsonderzoek). It is intended for
-radiologist performance assessments (RPA).
+radiologist performance assessments (RPA). It is provided as-is, with no
+explicit or implicit guarantees and its use is purely the responsibility
+of the user. See the LICENSE.txt file for more details.
 
 Building
 --------

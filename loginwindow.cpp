@@ -49,8 +49,10 @@ LoginWindow::LoginWindow(QWidget *parent)
 void LoginWindow::about()
 {
 	QMessageBox::information(this, "About LRCB-RPA",
-		"This is the Radiology Performance Assessment tool, written for "
-		"the Dutch expert centre for screening (LRCB) by Sjors Gielen.\n\n"
+		"This is the Radiology Performance Assessment tool. This software is "
+		"provided as-is by the Dutch Expert Centre for Screening (LRCB) with "
+		"no explicit or implicit guarantees.\n\n"
+		"Source code repository: https://github.com/sgielen/lrcb-rpa\n\n"
 		"Version: " __DATE__ " " __TIME__ "\n\n"
 		"Some icons made by Freepik, licensed by CC BY 3.0.\n"
 		"Some icons made by FatCow, licenesd by CC BY 3.0.\n"
